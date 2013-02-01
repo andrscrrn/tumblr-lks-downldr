@@ -98,6 +98,6 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 		getFavorites: getFavorites
 	};
 
-})('YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','LOCAL_PATH_FOR_YOUR_FAVORITES');
+})('blog.andrescarreno.co','pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI','pKSNVyIcxqQFt4YAZdeBINkmC1s9TREcBlEJe59a9Rnla7GM7P','');
 
 tumblrFavesDownldr.getFavorites(20);

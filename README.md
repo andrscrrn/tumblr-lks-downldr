@@ -8,8 +8,9 @@ How to use
 ==========
 
     1. Install node.js http://nodejs.org/ and the node-oauth API.
-    $ npm install oauth
-    2. Edit script with your info: 'YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','LOCAL_PATH_FOR_YOUR_FAVORITES'
+        $ npm install oauth
+    2. Edit script with your info: 
+        'YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','LOCAL_PATH_FOR_YOUR_FAVORITES'
     3. Make sure that the 'LOCAL_PATH_FOR_YOUR_FAVORITES' already exist on your machine.
     4. Change the getFavorites parameter for the number you want.
     5. Run script with node via terminal.

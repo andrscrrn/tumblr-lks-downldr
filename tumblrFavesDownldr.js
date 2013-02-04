@@ -20,7 +20,10 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 	limit = 20,
 	iterations = 0,
 	aux = 0,
-	_numberOfFavorites = 0;
+	_numberOfFavorites = 0,
+	numberOfImagesSavedOnCurrentIteration = 0,
+	currentIteration = 0,
+	limitOfCurrentIteration = 0;
 
 	var getAndSaveImage = function(filename,host,path){
 		var fn = filename,
@@ -43,6 +46,10 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 					if (err) throw err;
 					util.puts(fn + ' SAVED (' + (++imagesSaved) + ')');
 				});
+				if(++numberOfImagesSavedOnCurrentIteration === limitOfCurrentIteration && ++currentIteration < iterations){
+					numberOfImagesSavedOnCurrentIteration = 0;
+					oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
+				}
 			});
 		});
 	};
@@ -67,7 +74,8 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 				host = '',
 				path = '',
 				completeUrl = '';
-
+				limitOfCurrentIteration = liked_posts.length;
+				console.log('limitOfCurrentIteration',limitOfCurrentIteration);
 				for (var i in liked_posts) {
 					completeUrl = liked_posts[i].photos[0].original_size.url;
 					host = completeUrl.split('.com')[0] + '.com';
@@ -79,6 +87,7 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 	};
 
 	var getOAuthRequestTokenCallback = function (error, oauth_token, oauth_token_secret, results) {
+		console.log('getOAuthRequestTokenCallback');
 		if (error) {
 			util.puts('error :' + error);
 		} else {
@@ -89,9 +98,9 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 	var getFavorites = function (numberOfFavorites){
 		_numberOfFavorites = numberOfFavorites;
 		iterations = Math.ceil(numberOfFavorites / 20);
-		for(var i = 0; i < iterations; i++){
+		//for(var i = 0; i < iterations; i++){
 			oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
-		}
+		//}
 	};
 
 	return {

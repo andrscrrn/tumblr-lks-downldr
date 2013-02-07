@@ -75,7 +75,6 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 				path = '',
 				completeUrl = '';
 				limitOfCurrentIteration = liked_posts.length;
-				console.log('limitOfCurrentIteration',limitOfCurrentIteration);
 				for (var i in liked_posts) {
 					completeUrl = liked_posts[i].photos[0].original_size.url;
 					host = completeUrl.split('.com')[0] + '.com';
@@ -87,7 +86,6 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 	};
 
 	var getOAuthRequestTokenCallback = function (error, oauth_token, oauth_token_secret, results) {
-		console.log('getOAuthRequestTokenCallback');
 		if (error) {
 			util.puts('error :' + error);
 		} else {
@@ -107,6 +105,6 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 		getFavorites: getFavorites
 	};
 
-})('YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','LOCAL_PATH_FOR_YOUR_FAVORITES');
+})('YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','RELATIVE_LOCAL_PATH_FOR_YOUR_FAVORITES');
 
 tumblrFavesDownldr.getFavorites(20);

@@ -51,6 +51,8 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 					oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
 				}
 			});
+		}).on('error', function(e) {
+			console.log("Got error: " + e.message);
 		});
 	};
 
@@ -96,15 +98,13 @@ var tumblrFavesDownldr = (function(tumblrBlog,key,secret,localPath){
 	var getFavorites = function (numberOfFavorites){
 		_numberOfFavorites = numberOfFavorites;
 		iterations = Math.ceil(numberOfFavorites / 20);
-		//for(var i = 0; i < iterations; i++){
-			oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
-		//}
+		oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
 	};
 
 	return {
 		getFavorites: getFavorites
 	};
 
-})('YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','RELATIVE_LOCAL_PATH_FOR_YOUR_FAVORITES');
+})('YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','LOCAL_PATH_FOR_YOUR_FAVORITES');
 
-tumblrFavesDownldr.getFavorites(20);
+tumblrFavesDownldr.getFavorites(1005);

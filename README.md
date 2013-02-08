@@ -7,8 +7,7 @@ A simple node.js script that allow users to backup their Tumblr favorites.
 How to use
 ==========
 
-    1. Install node.js http://nodejs.org/ and the node-oauth API.
-        $ npm install oauth
+    1. Install node.js http://nodejs.org/
     2. Edit script with your info: 
         'YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','LOCAL_PATH_FOR_YOUR_FAVORITES'
         If you don't know anything about this please check this link: http://www.tumblr.com/oauth/apps

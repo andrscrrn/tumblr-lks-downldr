@@ -25,4 +25,4 @@ the Tumblr API has some undocumented limits.
 https://groups.google.com/forum/?fromgroups=#!searchin/tumblr-api/likes/tumblr-api/rJdk9DTIaxY/WkJ6mvb-9SgJ
 
 Apparently my logic is correct but I was not warned from the beginning about these limits and well, you can
-not backup ALL your likes, just the first one thousand (1000).
+not backup ALL your likes, just the last one thousand (1000).

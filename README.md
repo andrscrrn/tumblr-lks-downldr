@@ -1,7 +1,7 @@
-TumblrFavesDownldr
+TumblrLksDownldr
 ==================
 
-A simple node.js script that allow users to backup their Tumblr favorites.
+A simple node.js script that allow users to backup their Tumblr likes.
 
 
 How to use

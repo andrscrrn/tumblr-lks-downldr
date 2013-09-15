@@ -1,31 +1,51 @@
-var tumblrLksDownldr = (function(tumblrBlog,key,secret,localPath){
+/**
+ * This is a singleton type object that allow users to download their Tumblr likes.
+ * @param  {string} tumblrBlogURL
+ * @param  {string} oAuthConsumerKey
+ * @param  {string} oAuthConsumerSecret
+ * @param  {string} relativePathToSaveImages
+ */
+var TumblrLksDownldr = (function(tumblrBlogURL,oAuthConsumerKey,oAuthConsumerSecret,relativePathToSaveImages){
 
+	// Requiring Node Modules
 	var util = require('util'),
-	OAuth = require('oauth').OAuth,
-	fs = require('fs'),
-	http = require('http'),
+		OAuth = require('oauth').OAuth,
+		fs = require('fs'),
+		http = require('http'),
 
-	oa = new OAuth("http://www.tumblr.com/oauth/request_token",
-				"http://www.tumblr.com/oauth/access_token",
-				key,
-				secret,
-				"1.0",
-				null,
-				"HMAC-SHA1"),
+	// Constant URLs
+		BASE_PATH = 'http://api.tumblr.com/v2/blog/',
+		REQUEST_TOKEN_URL = 'http://www.tumblr.com/oauth/request_token',
+		ACCESS_TOKEN_URL = 'http://www.tumblr.com/oauth/access_token',
 
-	tumblrURL = tumblrBlog,
-	offset = '',
+	// Private Variables
 	it = 0,
 	imagesSaved = 0,
 	limit = 20,
 	iterations = 0,
 	aux = 0,
-	_numberOfLikes = 0,
+	numberOfLikes = 0,
 	numberOfImagesSavedOnCurrentIteration = 0,
 	currentIteration = 0,
-	limitOfCurrentIteration = 0;
+	limitOfCurrentIteration = 0,
 
-	var getAndSaveImage = function(filename,host,path){
+	// Creating the OAuth object with given parameters
+	oa = new OAuth(REQUEST_TOKEN_URL,
+					ACCESS_TOKEN_URL,
+					oAuthConsumerKey,
+					oAuthConsumerSecret,
+					"1.0",
+					null,
+					"HMAC-SHA1");
+
+	/**
+	 * [getAndSaveImage description]
+	 * @param  {[type]} filename
+	 * @param  {[type]} host
+	 * @param  {[type]} path
+	 * @return {[type]}
+	 */
+	function getAndSaveImage(filename,host,path){
 		var fn = filename,
 			options = {
 				host: host,
@@ -42,7 +62,7 @@ var tumblrLksDownldr = (function(tumblrBlog,key,secret,localPath){
 			});
 
 			res.on('end', function () {
-				fs.writeFile(localPath + fn, imagedata, 'binary', function (err) {
+				fs.writeFile(relativePathToSaveImages + fn, imagedata, 'binary', function (err) {
 					if (err) throw err;
 					util.puts(fn + ' SAVED (' + (++imagesSaved) + ')');
 				});
@@ -54,18 +74,26 @@ var tumblrLksDownldr = (function(tumblrBlog,key,secret,localPath){
 		}).on('error', function(e) {
 			console.log("Got error: " + e.message);
 		});
-	};
+	}
 
-	var getOAuthAccessTokenCallback = function (error, oauth_access_token, oauth_access_token_secret, results2) {
+	/**
+	 * [getOAuthAccessTokenCallback description]
+	 * @param  {[type]} error
+	 * @param  {[type]} oauth_access_token
+	 * @param  {[type]} oauth_access_token_secret
+	 * @param  {[type]} results2
+	 * @return {[type]}
+	 */
+	function getOAuthAccessTokenCallback(error, oauth_access_token, oauth_access_token_secret, results2) {
 
 		if(++aux === iterations){
-			limit = _numberOfLikes % 20;
+			limit = numberOfLikes % 20;
 		}
 
 		var data = "";
 
-		oa.getProtectedResource("http://api.tumblr.com/v2/blog/" + tumblrURL +
-			"/likes?api_key=" + key + "&offset=" + (++it * 20) +
+		oa.getProtectedResource(BASE_PATH + tumblrBlogURL +
+			"/likes?api_key=" + oAuthConsumerKey + "&offset=" + (++it * 20) +
 			"&limit=" + limit,
 			"GET",
 			oauth_access_token,
@@ -85,26 +113,42 @@ var tumblrLksDownldr = (function(tumblrBlog,key,secret,localPath){
 					getAndSaveImage(fileName,host.replace('http://',''),path);
 				}
 			});
-	};
+	}
 
-	var getOAuthRequestTokenCallback = function (error, oauth_token, oauth_token_secret, results) {
+	/**
+	 * [getOAuthRequestTokenCallback description]
+	 * @param  {[type]} error
+	 * @param  {[type]} oauth_token
+	 * @param  {[type]} oauth_token_secret
+	 * @param  {[type]} results
+	 * @return {[type]}
+	 */
+	function getOAuthRequestTokenCallback(error, oauth_token, oauth_token_secret, results) {
 		if (error) {
 			util.puts('error :' + error);
 		} else {
 			oa.getOAuthAccessToken(oauth_token, oauth_token_secret, getOAuthAccessTokenCallback);
 		}
-	};
+	}
 
-	var getLikes = function (numberOfLikes){
-		_numberOfLikes = numberOfLikes;
+	/**
+	 * [getLikes description]
+	 * @param  {[type]} numberOfLikes
+	 * @return {[type]}
+	 */
+	function getLikes(numberOfLikes){
+		numberOfLikes = numberOfLikes;
 		iterations = Math.ceil(numberOfLikes / 20);
 		oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
-	};
+	}
 
+	/**
+	 * 
+	 */
 	return {
 		getLikes: getLikes
 	};
 
-})('YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','LOCAL_PATH_FOR_YOUR_LIKES');
+})('blog.andrescarreno.co','pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI','pKSNVyIcxqQFt4YAZdeBINkmC1s9TREcBlEJe59a9Rnla7GM7P','./Likes/');
 
-tumblrLksDownldr.getLikes(1000);
+TumblrLksDownldr.getLikes(20);

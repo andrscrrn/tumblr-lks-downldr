@@ -11,9 +11,9 @@ var http = require('http');
 var stdio = require('stdio');
 
 var ops = stdio.getopt({
-    'url': {key: 'u', args: 1, description: 'What this option means', mandatory: true},
-    'likesToDownload': {key: 'l', args: 1, description: 'Another description'},
-    'path': {key: 'p', args: 1}
+    'url': {key: 'u', args: 1, description: 'Valid Tumblr URL.', mandatory: true},
+    'likesToDownload': {key: 'l', args: 1, description: 'Number of likes that you want to download.', mandatory: true},
+    'path': {key: 'p', args: 1, description: 'Relative path to save the images.'}
 });
 
 var tumblrLksDownldr = (function(oAuthConsumerKey, oAuthConsumerSecret) {
@@ -132,7 +132,7 @@ var tumblrLksDownldr = (function(oAuthConsumerKey, oAuthConsumerSecret) {
         console.log('Downloading from:', tumblrUrl);
         console.log('Saving posts in:', pathToSave);
         console.log('Number of post to download:', numberOfPosts);
-        _path = pathToSave + '/';
+        _path = pathToSave;
         _tumblrBlogURL = tumblrUrl;
         if (fs.existsSync(_path)) {
           getLikes(numberOfPosts);
@@ -149,6 +149,6 @@ var tumblrLksDownldr = (function(oAuthConsumerKey, oAuthConsumerSecret) {
 
 tumblrLksDownldr.getLikes(
   ops.url,
-  ops.path ? process.cwd() + '/' + ops.path : process.cwd(),
-  ops.likesToDownload || 100
+  ops.path ? process.cwd() + '/' + ops.path : process.cwd() + '/',
+  ops.likesToDownload
 );

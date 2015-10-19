@@ -1,24 +1,22 @@
-TumblrLksDownldr
+Tumblr-Lks-Downldr
 ==================
 
-Simple and dumb utility for downloading your precious tumblr likes.
+Simple and dumb utility for downloading your precious Tumblr likes.
 
 
 How to use
 ==========
 
-Install this globally and you'll have access to the tumblr-lks-downldr command anywhere on your system.
+Install this globally and you'll have access to the ```tumblr-lks-downldr``` command anywhere on your system.
 ```sh
 npm install -g tumblr-lks-downldr
 ```
-Then just run ```tumblr-lks-downldr``` and define you tumblr url:
-```sh
-tumblr-lks-downldr -u 'andresdavid90.tumblr.com'
-```
-You can also set a number of likes that you want to download:
+
+Then just run ```tumblr-lks-downldr```, define you Tumblr url and the number of likes that you want to download:
 ```sh
 tumblr-lks-downldr -u 'andresdavid90.tumblr.com' -l 1000
 ```
+
 And of course a custom path if you want:
 ```sh
 tumblr-lks-downldr -u 'andresdavid90.tumblr.com' -l 1000 -p 'my-stupid-folder/'

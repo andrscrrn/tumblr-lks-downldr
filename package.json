@@ -1,0 +1,36 @@
+{
+  "name": "tumblr-lks-downldr",
+  "version": "0.0.2",
+  "description": "Node module for downloading tumblr likes from an specific user.",
+  "dependencies": {
+    "oauth": "^0.9.14",
+    "stdio": "^0.2.7"
+  },
+  "devDependencies": {
+    "eslint": "^1.7.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andresdavid90/tumblr-lks-downldr.git"
+  },
+  "keywords": [
+    "tumblr",
+    "download",
+    "likes",
+    "posts",
+    "authentication"
+  ],
+  "preferGlobal": "true",
+  "author": "Andrés Carreño <andresdavid90@gmail.com> (http://andrescarreno.co)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andresdavid90/TumblrLksDownldr/issues"
+  },
+  "homepage": "https://github.com/andresdavid90/TumblrLksDownldr#readme",
+  "bin": {
+    "tumblr-lks-downldr": "tumblr-lks-downldr.js"
+  }
+}

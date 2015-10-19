@@ -1,26 +1,34 @@
 TumblrLksDownldr
 ==================
 
-A simple node.js script that allow users to backup their Tumblr likes.
+Simple and dumb utility for downloading your precious tumblr likes.
 
 
 How to use
 ==========
 
-    1. Install node.js http://nodejs.org/
-    2. Edit script with your info: 
-        'YOUR_TUMBLR_URL','YOUR_OAUTH_CONSUMER_KEY','YOUR_SECRET_KEY','LOCAL_PATH_FOR_YOUR_FAVORITES'
-        If you don't know anything about this please check this link: http://www.tumblr.com/oauth/apps
-    3. Make sure that the 'LOCAL_PATH_FOR_YOUR_FAVORITES' already exist on your machine.
-    This is relative about where you run the script.
-    4. Change the getFavorites parameter for the number you want.
-    5. Run script with node via terminal.
+Install this globally and you'll have access to the tumblr-lks-downldr command anywhere on your system.
+```sh
+npm install -g tumblr-lks-downldr
+```
+Then just run ```tumblr-lks-downldr``` and define you tumblr url:
+```sh
+tumblr-lks-downldr -u 'andresdavid90.tumblr.com'
+```
+You can also set a number of likes that you want to download:
+```sh
+tumblr-lks-downldr -u 'andresdavid90.tumblr.com' -l 1000
+```
+And of course a custom path if you want:
+```sh
+tumblr-lks-downldr -u 'andresdavid90.tumblr.com' -l 1000 -p 'my-stupid-folder/'
+```
 
-BE AWARE!
+Be aware!
 ========================
 
 I've been trying to make this script to work perfectly for every user and number of likes but it seems that
-the Tumblr API has some undocumented limits. 
+the Tumblr API has some undocumented limits.
 
 https://groups.google.com/forum/?fromgroups=#!searchin/tumblr-api/likes/tumblr-api/rJdk9DTIaxY/WkJ6mvb-9SgJ
 

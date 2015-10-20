@@ -3,152 +3,183 @@
 'use strict';
 
 /**
- * Node Modules
+ * Node Dependencies
  */
 var oauth = require('oauth').OAuth;
 var fs = require('fs');
 var http = require('http');
 var stdio = require('stdio');
 
-var ops = stdio.getopt({
-    'url': {key: 'u', args: 1, description: 'Valid Tumblr URL.', mandatory: true},
-    'likesToDownload': {key: 'l', args: 1, description: 'Number of likes that you want to download.', mandatory: true},
-    'path': {key: 'p', args: 1, description: 'Relative path to save the images.'}
-});
-
-var tumblrLksDownldr = (function(oAuthConsumerKey, oAuthConsumerSecret) {
-
-  var
-
-  CONST = {
-    BASE_PATH: 'http://api.tumblr.com/v2/blog/',
-    REQUEST_TOKEN_URL: 'http://www.tumblr.com/oauth/request_token',
-    ACCESS_TOKEN_URL: 'http://www.tumblr.com/oauth/access_token',
+/**
+ * Constants
+ */
+var CONST = {
+  CLI_ARGS_CONFIG: {
+    'url': {
+      key: 'u',
+      args: 1,
+      description: 'Valid Tumblr URL.',
+      mandatory: true
+    },
+    'likesToDownload': {
+      key: 'l',
+      args: 1,
+      description: 'Number of likes that you want to download.',
+      mandatory: true
+    },
+    'path': {
+      key: 'p',
+      args: 1,
+      description: 'Relative path to save the images.'
+    }
   },
-  it = 0,
-  imagesSaved = 0,
-  limit = 20,
-  iterations = 0,
-  aux = 0,
-  numberOfLikes = 0,
-  numberOfImagesSavedOnCurrentIteration = 0,
-  currentIteration = 0,
-  limitOfCurrentIteration = 0,
-  _path = '',
-  _tumblrBlogURL = '',
+  BASE_PATH: 'http://api.tumblr.com/v2/blog/',
+  REQUEST_TOKEN_URL: 'http://www.tumblr.com/oauth/request_token',
+  ACCESS_TOKEN_URL: 'http://www.tumblr.com/oauth/access_token',
+  OAUTH_CONSUMER_KEY: 'pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI',
+  OAUTH_CONSUMER_SECRET: 'pKSNVyIcxqQFt4YAZdeBINkmC1s9TREcBlEJe59a9Rnla7GM7P',
+  ITERATION_LIMIT: 20
+};
+
+/**
+ * Module Globals
+ */
+var url = '';
+var likesToDownload = '';
+var customPath = '';
+var oa = null;
+var iterations = 0;
+var aux = 0;
+var it = 0;
+var limitOfCurrentIteration = 0;
+var numberOfImagesSavedOnCurrentIteration = 0;
+var imagesSaved = 0;
+var currentIteration = 0;
+var postNumber = 0;
+
+/**
+ * Init
+ * @return {void}
+ */
+~function init(){
+
+  var args = stdio.getopt(
+    CONST.CLI_ARGS_CONFIG
+  );
 
   oa = new oauth(
     CONST.REQUEST_TOKEN_URL,
     CONST.ACCESS_TOKEN_URL,
-    oAuthConsumerKey,
-    oAuthConsumerSecret,
+    CONST.OAUTH_CONSUMER_KEY,
+    CONST.OAUTH_CONSUMER_SECRET,
     '1.0',
     null,
     'HMAC-SHA1'
   );
 
-  function getAndSaveImage(filename, host, path) {
-    var options = {
+	url = args.url;
+	likesToDownload = args.likesToDownload;
+	customPath = args.path ? process.cwd() + '/' + args.path : process.cwd() + '/';
+
+	console.log('Downloading from:', url);
+	console.log('Number of posts to download:', likesToDownload);
+	console.log('Saving posts in:', customPath);
+  console.log('Starting process...');
+
+  if (fs.existsSync(customPath)){
+    getLikes();
+  } else {
+    fs.mkdirSync(customPath);
+    getLikes();
+  }
+}();
+
+function getLikes() {
+	iterations = Math.ceil(likesToDownload / CONST.ITERATION_LIMIT);
+	oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
+}
+
+function getOAuthRequestTokenCallback(err, oauth_token, oauth_token_secret, results) {
+  if (err) throw err;
+  oa.getOAuthAccessToken(oauth_token, oauth_token_secret, getOAuthAccessTokenCallback);
+}
+
+function getOAuthAccessTokenCallback(error, oauth_access_token, oauth_access_token_secret, results2){
+
+  var data = '';
+
+  if (++aux === iterations) {
+    CONST.ITERATION_LIMIT = likesToDownload % CONST.ITERATION_LIMIT;
+  }
+
+  oa.getProtectedResource(
+    CONST.BASE_PATH + url +'/likes?api_key=' + CONST.OAUTH_CONSUMER_KEY + '&offset=' + (++it * CONST.ITERATION_LIMIT) + '&limit=' + CONST.ITERATION_LIMIT,
+    'GET',
+    oauth_access_token,
+    oauth_access_token_secret,
+    function(error, data, response) {
+      var liked_posts = JSON.parse(data).response.liked_posts,
+      host = '',
+      path = '',
+      completeUrl = '',
+      fileName = '';
+      limitOfCurrentIteration = liked_posts.length;
+      for (var i = 0; i < liked_posts.length; i++) {
+        if (typeof liked_posts[i].photos !== 'undefined') {
+          completeUrl = liked_posts[i].photos[0].original_size.url;
+          host = completeUrl.split('.com')[0] + '.com';
+          path = completeUrl.split('.com')[1];
+          fileName = completeUrl.split('/')[completeUrl.split('/').length - 1];
+          if (!fs.existsSync(customPath + fileName)) {
+            getAndSaveImage(fileName, host.replace('http://', ''), path);
+          }else{
+            console.log(fileName, 'already exists.');
+            checkIfNewIterationNeeded();
+          }
+        } else {
+          console.log('No photos available for this post: %j', liked_posts[i].post_url);
+          checkIfNewIterationNeeded();
+        }
+      }
+    }
+  );
+}
+
+function getAndSaveImage(filename, host, path) {
+  http.get(
+    {
       host: host,
       port: 80,
       path: path
-    };
-
-    http.get(options, function(res) {
+    },
+    function(response) {
       var imagedata = '';
-      res.setEncoding('binary');
+      response.setEncoding('binary');
 
-      res.on('data', function(chunk) {
+      response.on('data', function(chunk) {
         imagedata += chunk;
       });
 
-      res.on('end', function() {
-        fs.writeFile(_path + filename, imagedata, 'binary', function(err) {
+      response.on('end', function() {
+        fs.writeFile(customPath + filename, imagedata, 'binary', function(err) {
           if (err) throw err;
-          console.log(_path + filename + ' SAVED (' + (++imagesSaved) + ')');
+          console.log(filename + ' SAVED (' + (++imagesSaved) + ')');
         });
-        if (++numberOfImagesSavedOnCurrentIteration === limitOfCurrentIteration && ++currentIteration < iterations) {
-          numberOfImagesSavedOnCurrentIteration = 0;
-          oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
-        }
-      });
-    }).on('error', function(e) {
-      console.log('Got error: ' + e.message);
-    });
-  }
-
-  function getOAuthAccessTokenCallback(error, oauth_access_token, oauth_access_token_secret, results2) {
-
-    if (++aux === iterations) {
-      limit = numberOfLikes % 20;
-    }
-
-    var data = '';
-
-    oa.getProtectedResource(CONST.BASE_PATH + _tumblrBlogURL +
-      '/likes?api_key=' + oAuthConsumerKey + '&offset=' + (++it * 20) +
-      '&limit=' + limit,
-      'GET',
-      oauth_access_token,
-      oauth_access_token_secret,
-
-      function(error, data, response) {
-        var liked_posts = JSON.parse(data).response.liked_posts,
-        host = '',
-        path = '',
-        completeUrl = '',
-        fileName = '';
-        limitOfCurrentIteration = liked_posts.length;
-        for (var i in liked_posts) {
-          if (typeof liked_posts[i].photos !== 'undefined') {
-            completeUrl = liked_posts[i].photos[0].original_size.url;
-            host = completeUrl.split('.com')[0] + '.com';
-            path = completeUrl.split('.com')[1];
-            fileName = completeUrl.split('/')[completeUrl.split('/').length - 1];
-            getAndSaveImage(fileName, host.replace('http://', ''), path);
-          } else {
-            console.log('No photos available for this post: %j', liked_posts[i].post_url);
-          }
-        }
+        checkIfNewIterationNeeded();
       });
     }
-
-    function getOAuthRequestTokenCallback(error, oauth_token, oauth_token_secret, results) {
-      if (error) {
-        console.log('error :', error);
-      } else {
-        oa.getOAuthAccessToken(oauth_token, oauth_token_secret, getOAuthAccessTokenCallback);
-      }
+  )
+  .on(
+    'error',
+    function(err) {
+      if (err) throw err;
     }
+  );
+}
 
-    function getLikes(numberOfLikes) {
-      numberOfLikes = numberOfLikes;
-      iterations = Math.ceil(numberOfLikes / 20);
-      oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
-    }
-
-    return {
-      getLikes: function(tumblrUrl, pathToSave, numberOfPosts){
-        console.log('Downloading from:', tumblrUrl);
-        console.log('Saving posts in:', pathToSave);
-        console.log('Number of post to download:', numberOfPosts);
-        _path = pathToSave;
-        _tumblrBlogURL = tumblrUrl;
-        if (fs.existsSync(_path)) {
-          getLikes(numberOfPosts);
-        }else{
-          console.log('_path:', _path);
-          fs.mkdirSync(_path);
-          getLikes(numberOfPosts);
-        }
-      }
-    };
-
+function checkIfNewIterationNeeded(){
+  if (++numberOfImagesSavedOnCurrentIteration === limitOfCurrentIteration && ++currentIteration < iterations) {
+    numberOfImagesSavedOnCurrentIteration = 0;
+    oa.getOAuthRequestToken(getOAuthRequestTokenCallback);
   }
-)('pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI', 'pKSNVyIcxqQFt4YAZdeBINkmC1s9TREcBlEJe59a9Rnla7GM7P');
-
-tumblrLksDownldr.getLikes(
-  ops.url,
-  ops.path ? process.cwd() + '/' + ops.path : process.cwd() + '/',
-  ops.likesToDownload
-);
+}

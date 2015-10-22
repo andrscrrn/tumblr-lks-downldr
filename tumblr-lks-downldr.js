@@ -278,10 +278,9 @@ function downloadImage(image) {
  * @return {void}
  */
 function updateProgressBar(){
-  nextIterationCheck();
-
   progressBar.tick(1);
   imagesDownloaded++;
+  nextIterationCheck();
 }
 
 /**
@@ -302,6 +301,7 @@ function nextIterationCheck() {
  */
 function exit() {
 
+  console.log('Images saved in:', customPathToSave);
   console.log('Images that failed:', imagesThatFailed);
   console.log('Done.');
 

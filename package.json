@@ -1,7 +1,7 @@
 {
   "name": "tumblr-lks-downldr",
-  "version": "0.0.5",
-  "description": "Node module for downloading tumblr likes from an specific user.",
+  "version": "1.0.3",
+  "description": "Node module for downloading Tumblr liked posts from an specific user.",
   "dependencies": {
     "oauth": "^0.9.14",
     "progress": "^1.1.8",
@@ -19,10 +19,12 @@
   },
   "keywords": [
     "tumblr",
-    "download",
     "likes",
+    "download",
+    "downloader",
     "posts",
-    "authentication"
+    "save",
+    "backup"
   ],
   "preferGlobal": "true",
   "author": "Andrés Carreño <andresdavid90@gmail.com> (http://andrescarreno.co)",

@@ -6,6 +6,7 @@
  * Node Dependencies
  */
 var fs = require('fs');
+var os = require('os');
 var http = require('http');
 var stdio = require('stdio');
 var progress = require('progress');
@@ -21,10 +22,10 @@ var CONST = {
       description: 'Valid Tumblr URL.',
       mandatory: true
     },
-    'postsToDownload': {
+    'postsToLoad': {
       key: 'l',
       args: 1,
-      description: 'Number of posts liked that you want to download.'
+      description: 'Number of posts liked that you want to load and download.'
     },
     'path': {
       key: 'p',
@@ -36,22 +37,36 @@ var CONST = {
   API_PORT: 80,
   API_PATH: '/v2/blog/{{blog-url}}/likes?api_key={{api-key}}{{before-param}}',
   API_KEY: 'pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI',
-  DOWNLOAD_LIMIT: 20
+  DOWNLOAD_LIMIT: 20,
+  PROGRESS_BAR_FORMAT: 'Downloading: [:bar] Progress: :percent Current Image: :current Estimated Time: :etas',
 };
 
 /**
  * Module Globals
  */
 var tumblrBlogUrl = '';
-var postsToDownload;
+var postsToLoad;
 var customPathToSave = '';
-var filesDownloaded = 0;
+
+/**
+ * Vendor instances
+ */
+var progressBar;
+
+/**
+ * Counters
+ */
+var imagesDownloaded = 0;
 var likedCount = 0;
-var imagesDownloadedProgressBar;
-var imagesList = [];
-var postsDownloaded = 0;
+var postsLoadedInMemory = 0;
 var imagesThatFailed = 0;
 var currentIteration = 0;
+
+/**
+ * Memory Storage
+ */
+var imagesToDownload = [];
+
 
 /**
  * Init
@@ -64,21 +79,25 @@ var currentIteration = 0;
   );
 
 	tumblrBlogUrl = args.url;
-	postsToDownload = args.postsToDownload ? Number(args.postsToDownload) : postsToDownload;
-	customPathToSave = args.path ? process.cwd() + '/' + args.path : process.cwd() + '/';
+	postsToLoad = args.postsToLoad ? Number(args.postsToLoad) : postsToLoad;
+  customPathToSave = args.path
+    ? args.path[0] === '/'
+      ? os.homedir() + args.path + '/'
+      : process.cwd() + '/' + args.path + '/'
+    : process.cwd() + '/';
 
   console.log('Tumblr Blog:', tumblrBlogUrl);
 	console.log('Saving in:', customPathToSave);
 
-  if (fs.existsSync(customPathToSave)){
-    getLikesFromServer();
-  } else {
-    fs.mkdirSync(customPathToSave);
-    getLikesFromServer();
-  }
+  getLikedPosts();
 }();
 
-function getLikesFromServer(timestamp) {
+/**
+ * Gets liked posts from the server
+ * @param  {String} timestamp used as an offset for the request
+ * @return {void}
+ */
+function getLikedPosts(timestamp) {
 
   http.get(
     {
@@ -105,59 +124,73 @@ function getLikesFromServer(timestamp) {
 
         likedCount = response.liked_count;
 
+        // This will happen just once
         if(!timestamp){
 
-          postsToDownload = postsToDownload
+          postsToLoad = postsToLoad
             ? (
-                postsToDownload > likedCount
+                postsToLoad > likedCount
                 ? likedCount
-                : postsToDownload
+                : postsToLoad
               )
             : likedCount;
 
-          console.log('Posts to download:', postsToDownload);
-          console.log('Loading images list on memory. Please wait...');
+          console.log('Posts to download:', postsToLoad);
+          console.log('Loading images list in memory. Please wait...');
         }
 
         for(var i = 0; i < likedPosts.length; i++){
+
           lastPostTimestamp = likedPosts[i].timestamp;
-          postsDownloaded++;
-          if(postsDownloaded !== postsToDownload){
+          postsLoadedInMemory++;
+
+          if(postsLoadedInMemory !== postsToLoad){
             if(likedPosts[i].photos) {
               likedPosts[i].photos.forEach(function(photo) {
+
                 var completeUrl = photo.original_size.url;
-                imagesList.push(
+                imagesToDownload.push(
                   {
                     'fileName': completeUrl.split('/')[completeUrl.split('/').length - 1],
                     'host': completeUrl.split('.com')[0].replace('http://', '') + '.com',
                     'path': completeUrl.split('.com')[1]
                   }
                 );
-                console.log(completeUrl+' ('+imagesList.length+')');
+                console.log(completeUrl+' ('+imagesToDownload.length+')');
               });
             }
           } else {
-            console.log('Images to download:', imagesList.length);
-            if(imagesList.length){
-              imagesDownloadedProgressBar = new progress(
-                'Downloading: [:bar] Progress: :percent Current Image: :current Estimated Time: :etas',
+            console.log('Images in memory to download:', imagesToDownload.length);
+            if(imagesToDownload.length){
+              progressBar = new progress(
+                CONST.PROGRESS_BAR_FORMAT,
                 {
                   complete: '=',
                   incomplete: ' ',
                   width: 20,
-                  total: imagesList.length,
+                  total: imagesToDownload.length,
                   callback: exit
                 }
               );
-              downloadImages(imagesList);
+
+              // Creating folder if it doesn't exist before start downloading
+              if (fs.existsSync(customPathToSave)){
+                queueImages();
+              } else {
+                fs.mkdirSync(customPathToSave);
+                queueImages();
+              }
             } else {
+              // Process exit if there are no images in memory
               exit();
             }
             break;
           }
         }
-        if(postsDownloaded !== postsToDownload){
-          getLikesFromServer(lastPostTimestamp);
+
+        // Requesting next group of liked posts
+        if(postsLoadedInMemory !== postsToLoad){
+          getLikedPosts(lastPostTimestamp);
         }
       });
     }
@@ -165,21 +198,40 @@ function getLikesFromServer(timestamp) {
   .on(
     'error',
     function(err) {
-      if (err) throw err;
+      if (err) {
+        console.log('Failed loading images list on memory.');
+        throw err;
+      }
     }
   );
 }
 
-function downloadImages(images) {
+/**
+ * Queues the request for each image on the current iteration
+ * @return {void}
+ */
+function queueImages() {
+
   var i = currentIteration++ * CONST.DOWNLOAD_LIMIT;
-  var e = CONST.DOWNLOAD_LIMIT * currentIteration;
-  e = e > imagesList.length ? imagesList.length : e;
-  for(; i < e; i++){
-    getAndSaveImage(images[i]);
+  var currentLimit = CONST.DOWNLOAD_LIMIT * currentIteration;
+
+  currentLimit = currentLimit > imagesToDownload.length
+    ? imagesToDownload.length
+    : currentLimit;
+
+  for(; i < currentLimit; i++){
+    downloadImage(imagesToDownload[i]);
   }
 }
 
-function getAndSaveImage(image) {
+/**
+ * Establish TCP connection for saving an image on disk
+ * @param  {Object} image object containg data for the download process
+ * @return {void}
+ */
+function downloadImage(image) {
+
+  // Checking if image is already on disk
   if (!fs.existsSync(customPathToSave + image.fileName)) {
     http.get(
       {
@@ -188,6 +240,7 @@ function getAndSaveImage(image) {
         path: image.path
       },
       function(response) {
+
         var imagedata = '';
         response.setEncoding('binary');
 
@@ -198,7 +251,8 @@ function getAndSaveImage(image) {
         response.on('end', function() {
           fs.writeFile(customPathToSave + image.fileName, imagedata, 'binary', function(err) {
             if (err) throw err;
-            updateImagesDownloadedProgressBar();
+            updateProgressBar();
+            nextIterationCheck();
           });
         });
       }
@@ -208,25 +262,48 @@ function getAndSaveImage(image) {
       function(err) {
         if (err) {
           imagesThatFailed++;
-          updateImagesDownloadedProgressBar();
+          updateProgressBar();
+          nextIterationCheck();
         }
       }
     );
   } else {
-    updateImagesDownloadedProgressBar();
+    updateProgressBar();
+    nextIterationCheck();
   }
 }
 
-function updateImagesDownloadedProgressBar(){
-  imagesDownloadedProgressBar.tick(1);
-  filesDownloaded++;
-  if(filesDownloaded % CONST.DOWNLOAD_LIMIT === 0){
-    downloadImages(imagesList);
+/**
+ * Updates the progress bar component
+ * @return {void}
+ */
+function updateProgressBar(){
+  nextIterationCheck();
+
+  progressBar.tick(1);
+  imagesDownloaded++;
+}
+
+/**
+ * Check if the next iteration is already needed
+ * @return {void}
+ */
+function nextIterationCheck() {
+
+  // Starting the download process again each time we reach current iteration limit
+  if(imagesDownloaded % CONST.DOWNLOAD_LIMIT === 0){
+    queueImages();
   }
 }
 
+/**
+ * Stop and exit the whole process
+ * @return {void}
+ */
 function exit() {
+
   console.log('Images that failed:', imagesThatFailed);
   console.log('Done.');
+
   process.exit();
 }

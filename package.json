@@ -1,9 +1,10 @@
 {
   "name": "tumblr-lks-downldr",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Node module for downloading tumblr likes from an specific user.",
   "dependencies": {
     "oauth": "^0.9.14",
+    "progress": "^1.1.8",
     "stdio": "^0.2.7"
   },
   "devDependencies": {

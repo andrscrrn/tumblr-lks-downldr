@@ -82,7 +82,7 @@ var imagesToDownload = [];
 	postsToLoad = args.postsToLoad ? Number(args.postsToLoad) : postsToLoad;
   customPathToSave = args.path
     ? args.path[0] === '/'
-      ? os.homedir() + args.path + '/'
+      ? args.path + '/'
       : process.cwd() + '/' + args.path + '/'
     : process.cwd() + '/';
 

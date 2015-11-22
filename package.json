@@ -1,7 +1,8 @@
 {
   "name": "tumblr-lks-downldr",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Node module for downloading Tumblr liked posts from an specific user.",
+  "main": "tumblr-lks-downldr.js",
   "dependencies": {
     "oauth": "^0.9.14",
     "progress": "^1.1.8",

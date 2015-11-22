@@ -74,23 +74,47 @@ var imagesToDownload = [];
  */
 ~function init(){
 
-  var args = stdio.getopt(
+  var args;
+
+  if(process.versions['electron']){
+    return;
+  }
+
+  args = stdio.getopt(
     CONST.CLI_ARGS_CONFIG
   );
 
-	tumblrBlogUrl = args.url;
-	postsToLoad = args.postsToLoad ? Number(args.postsToLoad) : postsToLoad;
-  customPathToSave = args.path
-    ? args.path[0] === '/'
-      ? args.path + '/'
-      : process.cwd() + '/' + args.path + '/'
-    : process.cwd() + '/';
+  setGlobalParams(
+    {
+      url: args.url,
+      postsToLoad: args.postsToLoad,
+      path: args.path
+    }
+  );
 
   console.log('Tumblr Blog:', tumblrBlogUrl);
 	console.log('Saving in:', customPathToSave);
 
   getLikedPosts();
 }();
+
+/**
+ * Parse data in order to set valid global data
+ * @param {Object} params object with keys
+ */
+function setGlobalParams(params) {
+
+  params.path = params.path.indexOf('C:\\fakepath\\') > -1
+    ? params.path.replace('C:\\fakepath\\', process.env.HOME + '/')
+    : params.path;
+  tumblrBlogUrl = params.url;
+	postsToLoad = params.postsToLoad ? Number(params.postsToLoad) : postsToLoad;
+  customPathToSave = params.path
+    ? params.path[0] === '/'
+      ? params.path + '/'
+      : process.cwd() + '/' + params.path + '/'
+    : process.cwd() + '/';
+}
 
 /**
  * Gets liked posts from the server
@@ -307,3 +331,6 @@ function exit() {
 
   process.exit();
 }
+
+exports.setGlobalParams = setGlobalParams;
+exports.getLikedPosts = getLikedPosts;

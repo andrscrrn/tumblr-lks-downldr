@@ -146,6 +146,12 @@ function getLikedPosts(timestamp) {
         var likedPosts = response.liked_posts;
         var lastPostTimestamp = null;
 
+        if(typeof likedPosts === 'undefined') {
+          console.log('Likes not available or not public for', tumblrBlogUrl);
+          exit();
+          return;
+        }
+
         likedCount = response.liked_count;
 
         // This will happen just once

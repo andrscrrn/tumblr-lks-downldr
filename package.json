@@ -1,6 +1,6 @@
 {
   "name": "tumblr-lks-downldr",
-  "version": "1.0.10",
+  "version": "0.0.0-semantically-released",
   "description": "Node module for downloading Tumblr liked posts from an specific user.",
   "main": "src/index.js",
   "dependencies": {
@@ -9,14 +9,21 @@
     "stdio": "0.2.7"
   },
   "devDependencies": {
-    "eslint": "1.7.1"
+    "chai": "3.5.0",
+    "commitizen": "2.7.2",
+    "cz-conventional-changelog": "1.1.5",
+    "eslint": "1.7.1",
+    "mocha": "2.4.5",
+    "semantic-release": "^4.3.5"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "commit": "git-cz",
+    "test": "mocha src/index.test.js -w",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andresdavid90/tumblr-lks-downldr.git"
+    "url": "https://github.com/andresdavid90/tumblr-lks-downldr.git"
   },
   "keywords": [
     "tumblr",
@@ -32,5 +39,8 @@
   "bugs": {
     "url": "https://github.com/andresdavid90/tumblr-lks-downldr/issues"
   },
-  "homepage": "https://github.com/andresdavid90/tumblr-lks-downldr#readme"
+  "homepage": "https://github.com/andresdavid90/tumblr-lks-downldr#readme",
+  "czConfig": {
+    "path": "node_modules/cz-conventional-changelog"
+  }
 }

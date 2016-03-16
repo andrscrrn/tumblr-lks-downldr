@@ -1,7 +1,12 @@
 # tumblr-lks-downldr
-[![npm version](https://badge.fury.io/js/tumblr-lks-downldr.svg)](https://www.npmjs.com/package/tumblr-lks-downldr)
+[![NPM](https://img.shields.io/npm/v/tumblr-lks-downldr.svg?style=flat-square)](https://www.npmjs.com/package/tumblr-lks-downldr)
+[![Downloads Total](https://img.shields.io/npm/dt/tumblr-lks-downldr.svg?style=flat-square)](https://www.npmjs.com/package/tumblr-lks-downldr)
+[![Downloads Monthly](https://img.shields.io/npm/dm/tumblr-lks-downldr.svg?style=flat-square)](https://www.npmjs.com/package/tumblr-lks-downldr)
+[![Travis](https://img.shields.io/travis/andresdavid90/tumblr-lks-downldr.svg?style=flat-square)](https://travis-ci.org/andresdavid90/tumblr-lks-downldr)
+[![Codecov](https://img.shields.io/codecov/c/github/andresdavid90/tumblr-lks-downldr.svg?style=flat-square)](https://codecov.io/github/andresdavid90/tumblr-lks-downldr)
+[![GitHub license](https://img.shields.io/github/license/andresdavid90/tumblr-lks-downldr.svg?style=flat-square)](https://github.com/andresdavid90/tumblr-lks-downldr)
 
-Simple node module for downloading your precious [Tumblr](https://tumblr.com) likes.
+Simple node module for downloading your precious [Tumblr](https://tumblr.com) likes. The code still suck but I'm working on it.
 
 ## How to use
 

@@ -53,6 +53,7 @@ var imagesToDownload = [];
  */
 function setGlobalParams(params) {
 
+  params.path = params.path || '';
   params.path = params.path.indexOf('C:\\fakepath\\') > -1
     ? params.path.replace('C:\\fakepath\\', process.env.HOME + '/')
     : params.path;

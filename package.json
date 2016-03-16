@@ -10,17 +10,20 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "codecov.io": "0.1.6",
     "commitizen": "2.7.2",
     "cz-conventional-changelog": "1.1.5",
     "eslint": "1.7.1",
     "ghooks": "1.0.3",
+    "istanbul": "0.4.2",
     "mocha": "2.4.5",
     "semantic-release": "^4.3.5"
   },
   "scripts": {
     "commit": "git-cz",
-    "test": "mocha src/index.test.js",
+    "test": "istanbul cover -x *.test.js _mocha -- -R spec src/index.test.js",
     "test:watch": "mocha src/index.test.js -w",
+    "report-coverage": "cat ./coverage/lcov.info | codecov",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {

@@ -1,4 +1,4 @@
-# Tumblr-Lks-Downldr
+# tumblr-lks-downldr
 [![npm version](https://badge.fury.io/js/tumblr-lks-downldr.svg)](https://www.npmjs.com/package/tumblr-lks-downldr)
 
 Simple and dumb utility for downloading your precious [Tumblr](https://tumblr.com) likes.

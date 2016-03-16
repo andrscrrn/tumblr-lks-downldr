@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 'use strict';
 
 /**
@@ -15,24 +13,6 @@ var progress = require('progress');
  * Constants
  */
 var CONST = {
-  CLI_ARGS_CONFIG: {
-    'url': {
-      key: 'u',
-      args: 1,
-      description: 'Valid Tumblr URL.',
-      mandatory: true
-    },
-    'postsToLoad': {
-      key: 'l',
-      args: 1,
-      description: 'Number of posts liked that you want to load and download.'
-    },
-    'path': {
-      key: 'p',
-      args: 1,
-      description: 'Relative path to save the images.'
-    }
-  },
   API_URL: 'api.tumblr.com',
   API_PORT: 80,
   API_PATH: '/v2/blog/{{blog-url}}/likes?api_key={{api-key}}{{before-param}}',
@@ -66,37 +46,6 @@ var currentIteration = 0;
  * Memory Storage
  */
 var imagesToDownload = [];
-
-
-/**
- * Init
- * @return {void}
- */
-~function init(){
-
-  var args;
-
-  if(process.versions['electron']){
-    return;
-  }
-
-  args = stdio.getopt(
-    CONST.CLI_ARGS_CONFIG
-  );
-
-  setGlobalParams(
-    {
-      url: args.url,
-      postsToLoad: args.postsToLoad,
-      path: args.path
-    }
-  );
-
-  console.log('Tumblr Blog:', tumblrBlogUrl);
-	console.log('Saving in:', customPathToSave);
-
-  getLikedPosts();
-}();
 
 /**
  * Parse data in order to set valid global data
@@ -338,5 +287,7 @@ function exit() {
   process.exit();
 }
 
-exports.setGlobalParams = setGlobalParams;
-exports.getLikedPosts = getLikedPosts;
+module.exports = {
+  'setGlobalParams': setGlobalParams,
+  'getLikedPosts': getLikedPosts
+};

@@ -5,7 +5,6 @@
 [![Downloads Total](https://img.shields.io/npm/dt/tumblr-lks-downldr.svg?style=flat-square)](https://www.npmjs.com/package/tumblr-lks-downldr)
 [![Semantic Released](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![GitHub license](https://img.shields.io/github/license/andresdavid90/tumblr-lks-downldr.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 Simple node module for downloading your precious [Tumblr](https://tumblr.com) likes. The code still suck but I'm working on it.
 

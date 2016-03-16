@@ -13,6 +13,7 @@
     "commitizen": "2.7.2",
     "cz-conventional-changelog": "1.1.5",
     "eslint": "1.7.1",
+    "ghooks": "1.0.3",
     "mocha": "2.4.5",
     "semantic-release": "^4.3.5"
   },
@@ -43,5 +44,10 @@
   "homepage": "https://github.com/andresdavid90/tumblr-lks-downldr#readme",
   "czConfig": {
     "path": "node_modules/cz-conventional-changelog"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run test"
+    }
   }
 }

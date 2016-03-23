@@ -60,15 +60,16 @@ function setGlobalParams(params) {
 
   params.path = params.path || '';
   params.path = params.path.indexOf('C:\\fakepath\\') > -1
-    ? params.path.replace('C:\\fakepath\\', process.env.HOME + '/')
+    ? params.path.replace('C:\\fakepath\\', `${process.env.HOME}/`)
     : params.path;
+
   tumblrBlogUrl = params.url;
 	postsToLoad = params.postsToLoad ? Number(params.postsToLoad) : postsToLoad;
   customPathToSave = params.path
     ? params.path[0] === '/'
-      ? params.path + '/'
-      : process.cwd() + '/' + params.path + '/'
-    : process.cwd() + '/';
+      ? `${params.path}/`
+      : `${process.cwd()}/${params.path}/`
+    : `${process.cwd()}/`;
 }
 
 /**
@@ -85,14 +86,14 @@ function getLikedPosts(timestamp) {
       path: CONST.API_PATH
         .replace('{{blog-url}}', tumblrBlogUrl)
         .replace('{{api-key}}', CONST.API_KEY)
-        .replace('{{before-param}}', timestamp ? '&before='+timestamp : '')
+        .replace('{{before-param}}', timestamp ? `&before=${timestamp}` : '')
     },
     function(response) {
 
       var data = '';
 
-      response.on('data', function(d) {
-          data += d;
+      response.on('data', function(chunk) {
+          data += chunk;
       });
 
       response.on('end', function() {
@@ -180,15 +181,12 @@ function getLikedPosts(timestamp) {
       });
     }
   )
-  .on(
-    'error',
-    function(err) {
-      if (err) {
-        console.log('Failed loading images list on memory.');
-        throw err;
-      }
+  .on('error', (err) => {
+    if (err) {
+      console.log('Failed loading images list on memory.');
+      throw err;
     }
-  );
+  });
 }
 
 /**
@@ -207,34 +205,15 @@ function queueImages() {
   for(; i < currentLimit; i++){
     download(imagesToDownload[i])
       .then(()=>{
-        updateProgressBar();
-        nextIterationCheck();
+        progressBar.tick(1);
+        imagesDownloaded++;
+        if(imagesDownloaded % CONST.DOWNLOAD_LIMIT === 0){
+          queueImages();
+        }
       })
       .catch((error)=>{
         imagesThatFailed++;
       });
-  }
-}
-
-/**
- * Updates the progress bar component
- * @return {void}
- */
-function updateProgressBar(){
-  progressBar.tick(1);
-  imagesDownloaded++;
-  nextIterationCheck();
-}
-
-/**
- * Check if the next iteration is already needed
- * @return {void}
- */
-function nextIterationCheck() {
-
-  // Starting the download process again each time we reach current iteration limit
-  if(imagesDownloaded % CONST.DOWNLOAD_LIMIT === 0){
-    queueImages();
   }
 }
 

@@ -12,7 +12,7 @@ var progress = require('progress');
 /**
  * Internal Modules
  */
-var downloadImage = require('./download-image');
+var download = require('./download-image');
 
 /**
  * Constants
@@ -136,7 +136,7 @@ function getLikedPosts(timestamp) {
                 var completeUrl = photo.original_size.url;
                 imagesToDownload.push(
                   {
-                    'fileName': completeUrl.split('/')[completeUrl.split('/').length - 1],
+                    'fileName': customPathToSave + completeUrl.split('/')[completeUrl.split('/').length - 1],
                     'host': completeUrl.split('.com')[0].replace('http://', '') + '.com',
                     'path': completeUrl.split('.com')[1]
                   }
@@ -205,15 +205,14 @@ function queueImages() {
     : currentLimit;
 
   for(; i < currentLimit; i++){
-    imagesToDownload[i].fileName = customPathToSave + imagesToDownload[i].fileName;
-    imagesToDownload[i].onEnd = function(){
-      updateProgressBar();
-      nextIterationCheck();
-    };
-    imagesToDownload[i].onFail = function(){
-      imagesThatFailed++;
-    };
-    downloadImage(imagesToDownload[i]);
+    download(imagesToDownload[i])
+      .then(()=>{
+        updateProgressBar();
+        nextIterationCheck();
+      })
+      .catch((error)=>{
+        imagesThatFailed++;
+      });
   }
 }
 

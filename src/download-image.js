@@ -1,5 +1,7 @@
 'use strict';
 
+var fs = require('fs');
+
 /**
  * Establish TCP connection for saving an image on disk
  * @param  {Object} image object containg data for the download process
@@ -9,45 +11,49 @@ function downloadImage(image) {
 
   const ENCODING_TYPE = 'binary';
 
-  if (fs.existsSync(image.fileName)) {
-    image.onEnd();
-  } else {
-    http.get(
-      {
-        host: image.host,
-        port: 80,
-        path: image.path
-      },
-      (response) => {
+  return new Promise(function(resolve, reject) {
 
-        let imagedata = '';
+    const config = {
+      host: image.host,
+      port: 80,
+      path: image.path
+    };
 
-        response.setEncoding(ENCODING_TYPE);
-
-        response.on('data', (chunk) => {
-          imagedata += chunk;
+    if (fs.existsSync(image.fileName)) {
+      resolve(image.fileName);
+    } else {
+      http
+        .get(config, writeImageOnDisk)
+        .on('error', (err) => {
+          if (err) reject(err);
         });
+    }
 
-        response.on('end', () => {
-          fs.writeFile(
-            image.fileName,
-            imagedata,
-            ENCODING_TYPE,
-            (err) => {
-              if (err) throw err;
-              image.onEnd();
+    function writeImageOnDisk(response) {
+
+      let imagedata = '';
+
+      response.setEncoding(ENCODING_TYPE);
+
+      response.on('data', (chunk) => {
+        imagedata += chunk;
+      });
+
+      response.on('end', () => {
+        fs.writeFile(
+          image.fileName,
+          imagedata,
+          ENCODING_TYPE,
+          (err) => {
+            if (err) {
+              reject(Error('There was a problem saving the file.'));
             }
-          );
-        });
-      }
-    )
-    .on('error', (err) => {
-      if (err) {
-        image.onFail();
-        image.onEnd();
-      }
-    });
-  }
+            resolve(image.fileName);
+          }
+        );
+      });
+    }
+  });
 }
 
 module.exports = downloadImage;

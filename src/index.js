@@ -10,6 +10,11 @@ var stdio = require('stdio');
 var progress = require('progress');
 
 /**
+ * Internal Modules
+ */
+var downloadImage = require('./download-image');
+
+/**
  * Constants
  */
 var CONST = {
@@ -200,56 +205,15 @@ function queueImages() {
     : currentLimit;
 
   for(; i < currentLimit; i++){
+    imagesToDownload[i].fileName = customPathToSave + imagesToDownload[i].fileName;
+    imagesToDownload[i].onEnd = function(){
+      updateProgressBar();
+      nextIterationCheck();
+    };
+    imagesToDownload[i].onFail = function(){
+      imagesThatFailed++;
+    };
     downloadImage(imagesToDownload[i]);
-  }
-}
-
-/**
- * Establish TCP connection for saving an image on disk
- * @param  {Object} image object containg data for the download process
- * @return {void}
- */
-function downloadImage(image) {
-
-  // Checking if image is already on disk
-  if (!fs.existsSync(customPathToSave + image.fileName)) {
-    http.get(
-      {
-        host: image.host,
-        port: 80,
-        path: image.path
-      },
-      function(response) {
-
-        var imagedata = '';
-        response.setEncoding('binary');
-
-        response.on('data', function(chunk) {
-          imagedata += chunk;
-        });
-
-        response.on('end', function() {
-          fs.writeFile(customPathToSave + image.fileName, imagedata, 'binary', function(err) {
-            if (err) throw err;
-            updateProgressBar();
-            nextIterationCheck();
-          });
-        });
-      }
-    )
-    .on(
-      'error',
-      function(err) {
-        if (err) {
-          imagesThatFailed++;
-          updateProgressBar();
-          nextIterationCheck();
-        }
-      }
-    );
-  } else {
-    updateProgressBar();
-    nextIterationCheck();
   }
 }
 

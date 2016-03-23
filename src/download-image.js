@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Establish TCP connection for saving an image on disk
  * @param  {Object} image object containg data for the download process
@@ -16,33 +18,35 @@ function downloadImage(image) {
         port: 80,
         path: image.path
       },
-      function(response) {
+      (response) => {
 
-        var imagedata = '';
+        let imagedata = '';
 
         response.setEncoding(ENCODING_TYPE);
 
-        response.on('data', function(chunk) {
+        response.on('data', (chunk) => {
           imagedata += chunk;
         });
 
-        response.on('end', function() {
-          fs.writeFile(image.fileName, imagedata, ENCODING_TYPE, function(err) {
-            if (err) throw err;
-            image.onEnd();
-          });
+        response.on('end', () => {
+          fs.writeFile(
+            image.fileName,
+            imagedata,
+            ENCODING_TYPE,
+            (err) => {
+              if (err) throw err;
+              image.onEnd();
+            }
+          );
         });
       }
     )
-    .on(
-      'error',
-      function(err) {
-        if (err) {
-          image.onFail();
-          image.onEnd();
-        }
+    .on('error', (err) => {
+      if (err) {
+        image.onFail();
+        image.onEnd();
       }
-    );
+    });
   }
 }
 

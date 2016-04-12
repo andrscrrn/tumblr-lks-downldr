@@ -26,7 +26,10 @@ tumblrLksDownldr.setGlobalParams(
   {
     url: 'yourblog.tumblr.com',
     postsToLoad: '10',
-    path: 'some-path-you-want'
+    path: 'some-path-you-want',
+    onEnd: function(){
+      console.log('This will be triggered at the end of the process');
+    }
   }
 );
 tumblrLksDownldr.getLikedPosts();

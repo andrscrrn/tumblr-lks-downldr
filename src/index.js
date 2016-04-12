@@ -32,6 +32,7 @@ var CONST = {
 var tumblrBlogUrl = '';
 var postsToLoad;
 var customPathToSave = '';
+var onEndCallback;
 
 /**
  * Vendor instances
@@ -70,6 +71,8 @@ function setGlobalParams(params) {
       ? `${params.path}/`
       : `${process.cwd()}/${params.path}/`
     : `${process.cwd()}/`;
+
+  onEndCallback = typeof params.onEnd === 'function' ? params.onEnd : function(){};
 }
 
 /**
@@ -226,6 +229,8 @@ function exit() {
   console.log('Images saved in:', customPathToSave);
   console.log('Images that failed:', imagesThatFailed);
   console.log('Done.');
+
+  onEndCallback();
 }
 
 module.exports = {

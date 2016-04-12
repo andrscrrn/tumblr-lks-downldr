@@ -226,8 +226,6 @@ function exit() {
   console.log('Images saved in:', customPathToSave);
   console.log('Images that failed:', imagesThatFailed);
   console.log('Done.');
-
-  process.exit();
 }
 
 module.exports = {

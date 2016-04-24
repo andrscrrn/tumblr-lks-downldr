@@ -6,18 +6,23 @@
 [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![Semantic Released](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-Simple node module for downloading your precious [Tumblr](https://tumblr.com) likes. The code still suck but I'm working on it.
+Simple node module for downloading your precious [Tumblr](https://tumblr.com) likes.
+
+A few things for having in mind while using it:
+1. This will save just image files and not any other kind of content.
+2. The number of postsToLoad it likely not going to be the same as the number of images that you will get. Posts can have more than 1 images or not having any image at all.
+3. It's apparently not working totally fine on Windows. I'm planning to look at this issue if a near future but not for now.
 
 ## How to use
 
-Install the module as a dependency:
+Install the module as a dependency in your project:
 ```
 npm i tumblr-lks-downldr --save
 ```
 
 Require it into your project:
 ```
-var tumblrLksDownldr = require('tumblr-lks-downldr');
+const tumblrLksDownldr = require('tumblr-lks-downldr');
 ```
 
 Then you can interact with it using the `setGlobalParams` and `getLikedPosts` methods:
@@ -27,8 +32,17 @@ tumblrLksDownldr.setGlobalParams(
     url: 'yourblog.tumblr.com',
     postsToLoad: '10',
     path: 'some-path-you-want',
-    onEnd: function(){
-      console.log('This will be triggered at the end of the process');
+    onStart: (info) => {
+      console.log('onStart:', info);
+    },
+    onFetch: (info) => {
+      console.log('onFetch:', info);
+    },
+    onSuccess: (info) => {
+      console.log(`${info.fileName} succeed!`);
+    },
+    onError: (info) => {
+      console.log(`${info.fileName} failed!`);
     }
   }
 );

@@ -73,7 +73,7 @@ const getLikedPosts = (timestamp) => {
         response.on('end', () => {
           const _data = JSON.parse(data).response;
           let likedPosts = _data.liked_posts;
-          if(likedPosts){
+          if (likedPosts) {
             const likedCount = _data.liked_count;
             const pushToArray = (photo) => {
               imagesToDownload.push(

@@ -1,7 +1,7 @@
 'use strict';
 
 const http = require('http');
-const pizzaGuy = require('./../../pizza-guy/src/index');
+const pizzaGuy = require('pizza-guy');
 
 const API_KEY = 'pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI';
 

@@ -9,9 +9,8 @@
 Simple node module for downloading your precious [Tumblr](https://tumblr.com) likes.
 
 A few things for having in mind while using it:
-1. This will save just image files and not any other kind of content.
-2. The number of postsToLoad it likely not going to be the same as the number of images that you will get. Posts can have more than 1 images or not having any image at all.
-3. It's apparently not working totally fine on Windows. I'm planning to look at this issue if a near future but not for now.
+* This will save ***just image files*** and not any other kind of content.
+* The number of `postsToLoad` it likely ***NOT*** going to be the same as the number of images that you will get. Posts can have more than one image or not having any image ***AT ALL***.
 
 ## How to use
 

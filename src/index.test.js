@@ -1,16 +1,18 @@
-var expect = require('chai').expect;
-var tumblrLksDownldr = require('./index.js');
+'use strict';
 
-describe('tumblrLksDownldr', function(){
+const expect = require('chai').expect;
+const tumblrLksDownldr = require('./index.js');
 
-  describe('setGlobalParams', function(){
-    it('should receive an object', function(){
+describe('tumblrLksDownldr', () => {
+
+  describe('setGlobalParams', () => {
+    it('should receive an object', () => {
       expect(true).to.be.true;
     });
   });
 
-  describe('getLikedPosts', function(){
-    it('get the posts', function(){
+  describe('getLikedPosts', () => {
+    it('get the posts', () => {
       expect(true).to.be.true;
     });
   });

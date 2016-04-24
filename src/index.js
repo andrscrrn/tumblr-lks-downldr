@@ -11,7 +11,7 @@ const pizzaGuy = require('pizza-guy');
  */
 const API_KEY = 'pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI';
 const imagesToDownload = [];
-let postsToLoad = 0;
+let postsToLoad;
 let tumblrBlogUrl = '';
 let downloadedPosts = 0;
 let customPathToSave = '';
@@ -27,7 +27,9 @@ let onErrorCallback = () => {};
  */
 const setGlobalParams = (params) => {
   tumblrBlogUrl = params.url;
-  postsToLoad = params.postsToLoad ? Number(params.postsToLoad) : postsToLoad;
+  postsToLoad = typeof params.postsToLoad !== 'undefined'
+    ? Number(params.postsToLoad)
+    : postsToLoad;
   customPathToSave = params.path
     ? params.path[0] === '/'
       ? `${params.path}`
@@ -59,86 +61,86 @@ const downloadImages = () => {
  * @return {void}
  */
 const getLikedPosts = (timestamp) => {
-  if (postsToLoad > 0) {
-    const beforeParam = timestamp ? `&before=${timestamp}` : '';
-    http.get(
-      {
-        host: 'api.tumblr.com',
-        port: 80,
-        path: `/v2/blog/${tumblrBlogUrl}/likes?api_key=${API_KEY}${beforeParam}`
-      },
-      (response) => {
-        let data = '';
 
-        response.on('data', (chunk) => {
-          data += chunk;
-        });
+  const beforeParam = timestamp ? `&before=${timestamp}` : '';
+  http.get(
+    {
+      host: 'api.tumblr.com',
+      port: 80,
+      path: `/v2/blog/${tumblrBlogUrl}/likes?api_key=${API_KEY}${beforeParam}`
+    },
+    (response) => {
+      let data = '';
 
-        response.on('end', () => {
-          const _data = JSON.parse(data).response;
-          let likedPosts = _data.liked_posts;
-          if (likedPosts) {
-            const likedCount = _data.liked_count;
-            const pushToArray = (photo) => {
-              imagesToDownload.push(
-                photo.original_size.url
-              );
-            };
-            let lastPostTimestamp = null;
+      response.on('data', (chunk) => {
+        data += chunk;
+      });
 
-            if (postsToLoad < likedPosts.length) {
-              likedPosts = likedPosts.slice(0, postsToLoad);
-            }
+      response.on('end', () => {
+        const _data = JSON.parse(data).response;
+        let likedPosts = _data.liked_posts;
+        if (likedPosts) {
+          const likedCount = _data.liked_count;
+          const pushToArray = (photo) => {
+            imagesToDownload.push(
+              photo.original_size.url
+            );
+          };
+          let lastPostTimestamp = null;
 
-            // This will happen just once
-            if (!timestamp) {
-              postsToLoad = postsToLoad
-                ? postsToLoad > likedCount
-                  ? likedCount
-                  : postsToLoad
-                : likedCount;
-              onStartCallback({
-                postsToLoad
-              });
-            }
+          if (postsToLoad < likedPosts.length) {
+            likedPosts = likedPosts.slice(0, postsToLoad);
+          }
 
-            for (let i = 0; i < likedPosts.length; i++) {
-              const currentPost = likedPosts[i];
-              if (Array.isArray(currentPost.photos)) {
-                currentPost.photos.forEach(pushToArray);
-              }
-              downloadedPosts++;
-              lastPostTimestamp = likedPosts[i].timestamp;
-              if (downloadedPosts === postsToLoad) {
-                break;
-              }
-            }
-
-            onFetchCallback({
-              postsToLoad,
-              downloadedPosts,
-              imagesToDownload: imagesToDownload.length
-            });
-
-            if (postsToLoad === downloadedPosts) {
-              downloadImages();
-            } else {
-              getLikedPosts(lastPostTimestamp);
-            }
-          } else {
+          // This will happen just once
+          if (!timestamp) {
+            postsToLoad = postsToLoad
+              ? postsToLoad > likedCount
+                ? likedCount
+                : postsToLoad
+              : likedCount;
             onStartCallback({
               postsToLoad
             });
           }
-        });
-      }
-    )
-    .on('error', (err) => {
-      if (err) {
-        throw err;
-      }
-    });
-  }
+
+          for (let i = 0; i < likedPosts.length; i++) {
+            const currentPost = likedPosts[i];
+            if (Array.isArray(currentPost.photos)) {
+              currentPost.photos.forEach(pushToArray);
+            }
+            downloadedPosts++;
+            lastPostTimestamp = likedPosts[i].timestamp;
+            if (downloadedPosts === postsToLoad) {
+              break;
+            }
+          }
+
+          onFetchCallback({
+            postsToLoad,
+            downloadedPosts,
+            imagesToDownload: imagesToDownload.length
+          });
+
+          if (postsToLoad === downloadedPosts) {
+            downloadImages();
+          } else {
+            getLikedPosts(lastPostTimestamp);
+          }
+        } else {
+          onStartCallback({
+            postsToLoad
+          });
+        }
+      });
+    }
+  )
+  .on('error', (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+
 };
 
 module.exports = {

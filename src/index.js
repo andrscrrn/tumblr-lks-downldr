@@ -1,15 +1,19 @@
 'use strict';
 
+/**
+ * Node Modules
+ */
 const http = require('http');
 const pizzaGuy = require('pizza-guy');
 
+/**
+ * Module Globals
+ */
 const API_KEY = 'pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI';
-
-let downloadedPosts = 0;
 const imagesToDownload = [];
-
 let postsToLoad = 0;
 let tumblrBlogUrl = '';
+let downloadedPosts = 0;
 let customPathToSave = '';
 let onStartCallback = () => {};
 let onFetchCallback = () => {};
@@ -36,16 +40,16 @@ const setGlobalParams = (params) => {
   onErrorCallback = typeof params.onError === 'function' ? params.onError : onErrorCallback;
 };
 
+/**
+ * Starts download process
+ * @return {void}
+ */
 const downloadImages = () => {
   pizzaGuy
     .deliver(imagesToDownload)
     .onAddress(customPathToSave)
-    .onSuccess((info) => {
-      onSuccessCallback(info);
-    })
-    .onError((error, info) => {
-      onErrorCallback(info);
-    })
+    .onSuccess(onSuccessCallback)
+    .onError(onErrorCallback)
     .start();
 };
 
@@ -123,7 +127,7 @@ const getLikedPosts = (timestamp) => {
             }
           } else {
             onStartCallback({
-              postsToLoad: 0
+              postsToLoad
             });
           }
         });

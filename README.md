@@ -40,7 +40,7 @@ tumblrLksDownldr.setGlobalParams(
     onSuccess: (info) => {
       console.log(`${info.fileName} succeed!`);
     },
-    onError: (info) => {
+    onError: (error, info) => {
       console.log(`${info.fileName} failed!`);
     }
   }

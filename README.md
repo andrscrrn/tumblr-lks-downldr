@@ -47,15 +47,15 @@ tumblrLksDownldr.setGlobalParams(
 );
 tumblrLksDownldr.getLikedPosts();
 ```
+## I want a functionality that is not supported. What can I do?
+Well, you can ask for it as an issue and depending on my available time, I can see how feasible it is. At that point the idea can be added as a To-Do itemor just get closed if it is not following our expectations with the module.
 
 ## Do I really need to create a javascript file to use this?
-
 Yes and no. For this specific module yes but if you want to use it as a CLI tool you can use [tumblr-lks-downldr-cli](https://github.com/andresdavid90/tumblr-lks-downldr-cli) that is basically a wrapper.
 
-## What happened with the CLI that was included on previous versions?
-
-I moved it to his own module  [tumblr-lks-downldr-cli](https://github.com/andresdavid90/tumblr-lks-downldr-cli) so it's easier to maintain.
+## To-Do
+- Give user feedback regarding the list of posts that are being loaded in memory before actually start downloading each file. When the list is too big, the user could feel that nothing is happening.
+- Raise the code coverage to a decent number.
 
 ## Issues
-
 I'm working on this module once on a while but if you find out any issue please report it [here](https://github.com/andresdavid90/tumblr-lks-downldr/issues).

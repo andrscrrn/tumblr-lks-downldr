@@ -53,9 +53,5 @@ Well, you can ask for it as an issue and depending on my available time, I can s
 ## Do I really need to create a javascript file to use this?
 Yes and no. For this specific module yes but if you want to use it as a CLI tool you can use [tumblr-lks-downldr-cli](https://github.com/andresdavid90/tumblr-lks-downldr-cli) that is basically a wrapper.
 
-## To-Do
-- Give user feedback regarding the list of posts that are being loaded in memory before actually start downloading each file. When the list is too big, the user could feel that nothing is happening.
-- Raise the code coverage to a decent number.
-
 ## Issues
 I'm working on this module once on a while but if you find out any issue please report it [here](https://github.com/andresdavid90/tumblr-lks-downldr/issues).

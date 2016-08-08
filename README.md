@@ -30,6 +30,7 @@ tumblrLksDownldr.setGlobalParams(
   {
     url: 'yourblog.tumblr.com',
     postsToLoad: '10',
+    postsOffset: '10',
     path: 'some-path-you-want',
     onStart: (info) => {
       console.log('onStart:', info);

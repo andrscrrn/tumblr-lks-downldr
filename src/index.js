@@ -12,6 +12,7 @@ const pizzaGuy = require('pizza-guy');
 const API_KEY = 'pXcUXQdlBndW7znq4C4vodeQg0OxCXOlXv2RamTphjNFj0MuzI';
 const imagesToDownload = [];
 let postsToLoad;
+let postsOffset = 0;
 let tumblrBlogUrl = '';
 let downloadedPosts = 0;
 let customPathToSave = '';
@@ -30,6 +31,9 @@ const setGlobalParams = (params) => {
   postsToLoad = typeof params.postsToLoad !== 'undefined'
     ? Number(params.postsToLoad)
     : postsToLoad;
+  postsOffset = typeof params.postsOffset !== 'undefined'
+      ? Number(params.postsOffset)
+      : postsOffset;
   customPathToSave = params.path
     ? params.path[0] === '/'
       ? `${params.path}`
@@ -63,11 +67,15 @@ const downloadImages = () => {
 const getLikedPosts = (timestamp) => {
 
   const beforeParam = timestamp ? `&before=${timestamp}` : '';
+  if (timestamp) {
+    postsOffset = 0;
+  }
+  const offsetParam = postsOffset > 0 ? `&offset=${postsOffset}` : '';
   http.get(
     {
       host: 'api.tumblr.com',
       port: 80,
-      path: `/v2/blog/${tumblrBlogUrl}/likes?api_key=${API_KEY}${beforeParam}`
+      path: `/v2/blog/${tumblrBlogUrl}/likes?api_key=${API_KEY}${beforeParam}${offsetParam}`
     },
     (response) => {
       let data = '';

@@ -18,6 +18,7 @@ let downloadedPosts = 0;
 let customPathToSave = '';
 let onStartCallback = () => {};
 let onFetchCallback = () => {};
+let onDownloadStartCb = () => {};
 let onSuccessCallback = () => {};
 let onErrorCallback = () => {};
 let onCompleteCb = () => {};
@@ -43,6 +44,7 @@ const setGlobalParams = (params) => {
 
   onStartCallback = typeof params.onStart === 'function' ? params.onStart : onStartCallback;
   onFetchCallback = typeof params.onFetch === 'function' ? params.onFetch : onFetchCallback;
+  onDownloadStartCb = typeof params.onDownloadStart === 'function' ? params.onDownloadStart : onDownloadStartCb;
   onSuccessCallback = typeof params.onSuccess === 'function' ? params.onSuccess : onSuccessCallback;
   onErrorCallback = typeof params.onError === 'function' ? params.onError : onErrorCallback;
   onCompleteCb = typeof params.onComplete === 'function' ? params.onComplete : onCompleteCb;
@@ -53,6 +55,11 @@ const setGlobalParams = (params) => {
  * @return {void}
  */
 const downloadImages = () => {
+  onDownloadStartCb({
+    postsToLoad,
+    downloadedPosts,
+    filesToDownload: imagesToDownload.length
+  });
   pizzaGuy
     .deliver(imagesToDownload)
     .onAddress(customPathToSave)

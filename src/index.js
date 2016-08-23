@@ -90,9 +90,11 @@ const getLikedPosts = (timestamp) => {
         if (likedPosts) {
           const likedCount = _data.liked_count;
           const pushToArray = (photo) => {
-            imagesToDownload.push(
-              photo.original_size.url
-            );
+            if (!imagesToDownload.includes(photo.original_size.url)) {
+              imagesToDownload.push(
+                photo.original_size.url
+              );
+            }
           };
           let lastPostTimestamp = null;
 

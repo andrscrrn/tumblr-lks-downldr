@@ -20,12 +20,12 @@ npm i tumblr-lks-downldr --save
 ```
 
 Require it into your project:
-```
+```javascript
 const tumblrLksDownldr = require('tumblr-lks-downldr');
 ```
 
 Then you can interact with it using the `setGlobalParams` and `getLikedPosts` methods:
-```
+```javascript
 tumblrLksDownldr.setGlobalParams(
   {
     url: 'yourblog.tumblr.com',

@@ -45,7 +45,7 @@ const setGlobalParams = (params) => {
   onFetchCallback = typeof params.onFetch === 'function' ? params.onFetch : onFetchCallback;
   onSuccessCallback = typeof params.onSuccess === 'function' ? params.onSuccess : onSuccessCallback;
   onErrorCallback = typeof params.onError === 'function' ? params.onError : onErrorCallback;
-  onCompleteCb = typeof params.onError === 'function' ? params.onComplete : onCompleteCb;
+  onCompleteCb = typeof params.onComplete === 'function' ? params.onComplete : onCompleteCb;
 };
 
 /**

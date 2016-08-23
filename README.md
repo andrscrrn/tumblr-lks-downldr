@@ -43,6 +43,9 @@ tumblrLksDownldr.setGlobalParams(
     },
     onError: (error, info) => {
       console.log(`${info.fileName} failed!`);
+    },
+    onComplete: () => {
+      console.log('Complete!');
     }
   }
 );

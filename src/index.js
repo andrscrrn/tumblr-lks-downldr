@@ -20,6 +20,7 @@ let onStartCallback = () => {};
 let onFetchCallback = () => {};
 let onSuccessCallback = () => {};
 let onErrorCallback = () => {};
+let onCompleteCb = () => {};
 
 /**
  * Parse data in order to set valid global data
@@ -44,6 +45,7 @@ const setGlobalParams = (params) => {
   onFetchCallback = typeof params.onFetch === 'function' ? params.onFetch : onFetchCallback;
   onSuccessCallback = typeof params.onSuccess === 'function' ? params.onSuccess : onSuccessCallback;
   onErrorCallback = typeof params.onError === 'function' ? params.onError : onErrorCallback;
+  onCompleteCb = typeof params.onError === 'function' ? params.onComplete : onCompleteCb;
 };
 
 /**
@@ -56,6 +58,7 @@ const downloadImages = () => {
     .onAddress(customPathToSave)
     .onSuccess(onSuccessCallback)
     .onError(onErrorCallback)
+    .onComplete(onCompleteCb)
     .start();
 };
 

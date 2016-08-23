@@ -38,6 +38,9 @@ tumblrLksDownldr.setGlobalParams(
     onFetch: (info) => {
       console.log('onFetch:', info);
     },
+    onDownloadStart: (info) => {
+      console.log('Download start:', info);
+    },
     onSuccess: (info) => {
       console.log(`${info.fileName} succeed!`);
     },

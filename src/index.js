@@ -87,7 +87,7 @@ const getLikedPosts = (timestamp) => {
       response.on('end', () => {
         const _data = JSON.parse(data).response;
         let likedPosts = _data.liked_posts;
-        if (likedPosts) {
+        if (likedPosts && likedPosts.length) {
           const likedCount = _data.liked_count;
           const pushToArray = (photo) => {
             if (!imagesToDownload.includes(photo.original_size.url)) {
@@ -138,9 +138,7 @@ const getLikedPosts = (timestamp) => {
             getLikedPosts(lastPostTimestamp);
           }
         } else {
-          onStartCallback({
-            postsToLoad
-          });
+          downloadImages();
         }
       });
     }

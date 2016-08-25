@@ -22,12 +22,12 @@ npm i tumblr-lks-downldr --save
 ```
 
 Require it into your project:
-```
+```javascript
 const tumblrLksDownldr = require('tumblr-lks-downldr');
 ```
 
 Then you can interact with it using the `setGlobalParams` and `getLikedPosts` methods:
-```
+```javascript
 tumblrLksDownldr.setGlobalParams(
   {
     url: 'yourblog.tumblr.com',
@@ -41,11 +41,17 @@ tumblrLksDownldr.setGlobalParams(
     onFetch: (info) => {
       console.log('onFetch:', info);
     },
+    onDownloadStart: (info) => {
+      console.log('Download start:', info);
+    },
     onSuccess: (info) => {
       console.log(`${info.fileName} succeed!`);
     },
     onError: (error, info) => {
       console.log(`${info.fileName} failed!`);
+    },
+    onComplete: () => {
+      console.log('Complete!');
     }
   }
 );

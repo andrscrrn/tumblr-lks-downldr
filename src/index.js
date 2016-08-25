@@ -21,8 +21,10 @@ let downloadedPosts = 0;
 let customPathToSave = '';
 let onStartCallback = () => {};
 let onFetchCallback = () => {};
+let onDownloadStartCb = () => {};
 let onSuccessCallback = () => {};
 let onErrorCallback = () => {};
+let onCompleteCb = () => {};
 
 /**
  * Parse data in order to set valid global data
@@ -47,8 +49,10 @@ const setGlobalParams = (params) => {
     : includeNotes;
   onStartCallback = typeof params.onStart === 'function' ? params.onStart : onStartCallback;
   onFetchCallback = typeof params.onFetch === 'function' ? params.onFetch : onFetchCallback;
+  onDownloadStartCb = typeof params.onDownloadStart === 'function' ? params.onDownloadStart : onDownloadStartCb;
   onSuccessCallback = typeof params.onSuccess === 'function' ? params.onSuccess : onSuccessCallback;
   onErrorCallback = typeof params.onError === 'function' ? params.onError : onErrorCallback;
+  onCompleteCb = typeof params.onComplete === 'function' ? params.onComplete : onCompleteCb;
 };
 
 /**
@@ -56,11 +60,17 @@ const setGlobalParams = (params) => {
  * @return {void}
  */
 const downloadImages = () => {
+  onDownloadStartCb({
+    postsToLoad,
+    downloadedPosts,
+    filesToDownload: imagesToDownload.length
+  });
   pizzaGuy
     .deliver(imagesToDownload)
     .onAddress(customPathToSave)
     .onSuccess(onSuccessCallback)
     .onError(onErrorCallback)
+    .onComplete(onCompleteCb)
     .start();
 };
 
@@ -103,10 +113,11 @@ const getLikedPosts = (timestamp) => {
       response.on('end', () => {
         const _data = JSON.parse(data).response;
         let likedPosts = _data.liked_posts;
-        if (likedPosts) {
+        if (likedPosts && likedPosts.length) {
           const likedCount = _data.liked_count;
           const pushToArray = (filebase, photo, i) => {
             const filename = `${filebase}_${i}.${photo.original_size.url.split('.').pop()}`;
+            //check for duplicates...
             imagesToDownload.push(
               { url: photo.original_size.url, name: filename }
             );
@@ -163,9 +174,7 @@ const getLikedPosts = (timestamp) => {
             getLikedPosts(lastPostTimestamp);
           }
         } else {
-          onStartCallback({
-            postsToLoad
-          });
+          downloadImages();
         }
       });
     }

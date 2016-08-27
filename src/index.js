@@ -16,7 +16,7 @@ const imagesToDownload = [];
 let postsToLoad;
 let postsOffset = 0;
 let tumblrBlogUrl = '';
-let includeNotes = false;
+let attribution = false;
 let downloadedPosts = 0;
 let customPathToSave = '';
 let onStartCallback = () => {};
@@ -44,9 +44,9 @@ const setGlobalParams = (params) => {
       ? `${params.path}`
       : `${process.cwd()}/${params.path}`
     : process.cwd();
-  includeNotes = typeof params.includeNotes !== 'undefined' && params.includeNotes === true
+  attribution = typeof params.attribution !== 'undefined' && params.attribution === true
     ? true
-    : includeNotes;
+    : attribution;
   onStartCallback = typeof params.onStart === 'function' ? params.onStart : onStartCallback;
   onFetchCallback = typeof params.onFetch === 'function' ? params.onFetch : onFetchCallback;
   onDownloadStartCb = typeof params.onDownloadStart === 'function' ? params.onDownloadStart : onDownloadStartCb;
@@ -91,7 +91,6 @@ const cleanFileName = function (filename) {
  * @return {void}
  */
 const getLikedPosts = (timestamp) => {
-
   const beforeParam = timestamp ? `&before=${timestamp}` : '';
   if (timestamp) {
     postsOffset = 0;
@@ -116,11 +115,16 @@ const getLikedPosts = (timestamp) => {
         if (likedPosts && likedPosts.length) {
           const likedCount = _data.liked_count;
           const pushToArray = (filebase, photo, i) => {
-            const filename = `${filebase}_${i}.${photo.original_size.url.split('.').pop()}`;
-            //check for duplicates...
-            imagesToDownload.push(
-              { url: photo.original_size.url, name: filename }
-            );
+            if (filebase !== '') {
+              const filename = `${filebase}_${i}.${photo.original_size.url.split('.').pop()}`;
+              if (!imagesToDownload.some((v) => { return v.url === photo.original_size.url; })) {
+                imagesToDownload.push(
+                  { url: photo.original_size.url, name: filename }
+                );
+              }
+            } else if (!imagesToDownload.includes(photo.original_size.url)) {
+              imagesToDownload.push(photo.original_size.url);
+            }
           };
           const saveNote = (filebase, notetext) => {
             if (notetext !== '') {
@@ -149,9 +153,11 @@ const getLikedPosts = (timestamp) => {
           for (let i = 0; i < likedPosts.length; i++) {
             const currentPost = likedPosts[i];
             if (Array.isArray(currentPost.photos)) {
-              const filebase = cleanFileName(`${currentPost.blog_name}_${currentPost.timestamp}`);
+              const filebase = attribution === true
+                ? cleanFileName(`${currentPost.blog_name}_${currentPost.timestamp}`)
+                : '';
               currentPost.photos.forEach(pushToArray.bind(null, filebase));
-              if (includeNotes === true && currentPost.hasOwnProperty('caption')) {
+              if (attribution === true && currentPost.hasOwnProperty('caption')) {
                 saveNote(filebase, currentPost.caption);
               }
             }

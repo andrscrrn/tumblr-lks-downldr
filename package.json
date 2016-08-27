@@ -4,9 +4,9 @@
   "description": "Node module for downloading Tumblr liked posts from an specific user.",
   "main": "src/index.js",
   "dependencies": {
-    "pizza-guy": "^1.2.0",
+    "pizza-guy": "^1.4.0",
     "stdio": "0.2.7",
-    "html-to-text": "2.1.x"
+    "html-to-text": "^2.1.3"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.3",

@@ -5,6 +5,8 @@
  */
 const http = require('http');
 const pizzaGuy = require('pizza-guy');
+const fs = require('fs');
+const html2text = require('html-to-text');
 
 /**
  * Module Globals
@@ -14,6 +16,7 @@ const imagesToDownload = [];
 let postsToLoad;
 let postsOffset = 0;
 let tumblrBlogUrl = '';
+let attribution = false;
 let downloadedPosts = 0;
 let customPathToSave = '';
 let onStartCallback = () => {};
@@ -41,7 +44,9 @@ const setGlobalParams = (params) => {
       ? `${params.path}`
       : `${process.cwd()}/${params.path}`
     : process.cwd();
-
+  attribution = typeof params.attribution !== 'undefined' && params.attribution === true
+    ? true
+    : attribution;
   onStartCallback = typeof params.onStart === 'function' ? params.onStart : onStartCallback;
   onFetchCallback = typeof params.onFetch === 'function' ? params.onFetch : onFetchCallback;
   onDownloadStartCb = typeof params.onDownloadStart === 'function' ? params.onDownloadStart : onDownloadStartCb;
@@ -70,12 +75,22 @@ const downloadImages = () => {
 };
 
 /**
+ * Make sure the filenames are safe by stripping out problematic characters
+ * @param {String} filename a potential filename
+ * @returns {String} filename with characters stripped out
+ */
+const cleanFileName = function (filename) {
+  // https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247.aspx#file_and_directory_names
+  return filename.replace(/[<>:"/\\|?*\x00-\x1F\r\n\t]/g, '');
+};
+
+/**
  * Gets liked posts from the server
  * @param  {String} timestamp used as an offset for the request
  * @return {void}
  */
 const getLikedPosts = (timestamp) => {
-
   const beforeParam = timestamp ? `&before=${timestamp}` : '';
   if (timestamp) {
     postsOffset = 0;
@@ -99,11 +114,22 @@ const getLikedPosts = (timestamp) => {
         let likedPosts = _data.liked_posts;
         if (likedPosts && likedPosts.length) {
           const likedCount = _data.liked_count;
-          const pushToArray = (photo) => {
-            if (!imagesToDownload.includes(photo.original_size.url)) {
-              imagesToDownload.push(
-                photo.original_size.url
-              );
+          const pushToArray = (filebase, photo, i) => {
+            if (filebase !== '') {
+              const filename = `${filebase}_${i}.${photo.original_size.url.split('.').pop()}`;
+              if (!imagesToDownload.some((v) => { return v.url === photo.original_size.url; })) {
+                imagesToDownload.push(
+                  { url: photo.original_size.url, name: filename }
+                );
+              }
+            } else if (!imagesToDownload.includes(photo.original_size.url)) {
+              imagesToDownload.push(photo.original_size.url);
+            }
+          };
+          const saveNote = (filebase, notetext) => {
+            if (notetext !== '') {
+              const plaintext = html2text.fromString(notetext);
+              fs.writeFile(`${customPathToSave}/${filebase}.txt`, plaintext);
             }
           };
           let lastPostTimestamp = null;
@@ -127,7 +153,13 @@ const getLikedPosts = (timestamp) => {
           for (let i = 0; i < likedPosts.length; i++) {
             const currentPost = likedPosts[i];
             if (Array.isArray(currentPost.photos)) {
-              currentPost.photos.forEach(pushToArray);
+              const filebase = attribution === true
+                ? cleanFileName(`${currentPost.blog_name}_${currentPost.timestamp}`)
+                : '';
+              currentPost.photos.forEach(pushToArray.bind(null, filebase));
+              if (attribution === true && currentPost.hasOwnProperty('caption')) {
+                saveNote(filebase, currentPost.caption);
+              }
             }
             downloadedPosts++;
             lastPostTimestamp = likedPosts[i].timestamp;

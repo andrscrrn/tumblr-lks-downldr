@@ -10,7 +10,10 @@ Simple node module for downloading your precious [Tumblr](https://tumblr.com) li
 
 A few things for having in mind while using it:
 * This will save ***just image files*** and not any other kind of content.
+* Images are saved with the filenames given by Tumblr unless the `attribution` parameter is set to true (see below).
 * The number of `postsToLoad` it likely ***NOT*** going to be the same as the number of images that you will get. Posts can have more than one image or not having any image ***AT ALL***.
+* The maximum value for postsOffset is 1000 (this is [a limitation of the Tumblr API](https://www.tumblr.com/docs/en/api/v2#blog-likes)).
+* If the `attribution` parameter is set to true, images will be renamed in the form "{blogname}_{timestamp}" and a .txt file with the like's textual content will be created using the same name (i.e. 'blogpost_123456_0.jpg' will have its note saved as 'blogpost_123456.txt').
 
 ## How to use
 
@@ -31,6 +34,7 @@ tumblrLksDownldr.setGlobalParams(
     url: 'yourblog.tumblr.com',
     postsToLoad: '10',
     postsOffset: '10',
+    attribution: true,
     path: 'some-path-you-want',
     onStart: (info) => {
       console.log('onStart:', info);

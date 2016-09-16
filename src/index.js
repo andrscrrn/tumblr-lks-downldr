@@ -122,7 +122,7 @@ const getLikedPosts = (timestamp) => {
                   { url: photo.original_size.url, name: filename }
                 );
               }
-            } else if (!imagesToDownload.includes(photo.original_size.url)) {
+            } else if (imagesToDownload.indexOf(photo.original_size.url) === -1) {
               imagesToDownload.push(photo.original_size.url);
             }
           };

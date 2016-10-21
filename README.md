@@ -1,6 +1,6 @@
 # tumblr-lks-downldr
-[![Travis](https://img.shields.io/travis/andresdavid90/tumblr-lks-downldr.svg?style=flat-square)](https://travis-ci.org/andresdavid90/tumblr-lks-downldr)
-[![Codecov](https://img.shields.io/codecov/c/github/andresdavid90/tumblr-lks-downldr.svg?style=flat-square)](https://codecov.io/github/andresdavid90/tumblr-lks-downldr)
+[![Travis](https://img.shields.io/travis/andrscrrn/tumblr-lks-downldr.svg?style=flat-square)](https://travis-ci.org/andrscrrn/tumblr-lks-downldr)
+[![Codecov](https://img.shields.io/codecov/c/github/andrscrrn/tumblr-lks-downldr.svg?style=flat-square)](https://codecov.io/github/andrscrrn/tumblr-lks-downldr)
 [![NPM](https://img.shields.io/npm/v/tumblr-lks-downldr.svg?style=flat-square)](https://www.npmjs.com/package/tumblr-lks-downldr)
 [![Downloads Total](https://img.shields.io/npm/dt/tumblr-lks-downldr.svg?style=flat-square)](https://www.npmjs.com/package/tumblr-lks-downldr)
 [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
@@ -62,7 +62,7 @@ tumblrLksDownldr.getLikedPosts();
 Well, you can ask for it as an issue and depending on my available time, I can see how feasible it is. At that point the idea can be added as a To-Do itemor just get closed if it is not following our expectations with the module.
 
 ## Do I really need to create a javascript file to use this?
-Yes and no. For this specific module yes but if you want to use it as a CLI tool you can use [tumblr-lks-downldr-cli](https://github.com/andresdavid90/tumblr-lks-downldr-cli) that is basically a wrapper.
+Yes and no. For this specific module yes but if you want to use it as a CLI tool you can use [tumblr-lks-downldr-cli](https://github.com/andrscrrn/tumblr-lks-downldr-cli) that is basically a wrapper.
 
 ## Issues
-I'm working on this module once on a while but if you find out any issue please report it [here](https://github.com/andresdavid90/tumblr-lks-downldr/issues).
+I'm working on this module once on a while but if you find out any issue please report it [here](https://github.com/andrscrrn/tumblr-lks-downldr/issues).

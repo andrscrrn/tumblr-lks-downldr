@@ -162,7 +162,7 @@ const getLikedPosts = (timestamp) => {
               }
             }
             downloadedPosts++;
-            lastPostTimestamp = likedPosts[i].timestamp;
+            lastPostTimestamp = likedPosts[i].liked_timestamp;
             if (downloadedPosts === postsToLoad) {
               break;
             }

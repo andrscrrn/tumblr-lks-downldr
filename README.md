@@ -14,6 +14,7 @@ A few things for having in mind while using it:
 * The number of `postsToLoad` it likely ***NOT*** going to be the same as the number of images that you will get. Posts can have more than one image or not having any image ***AT ALL***.
 * The maximum value for postsOffset is 1000 (this is [a limitation of the Tumblr API](https://www.tumblr.com/docs/en/api/v2#blog-likes)).
 * If the `attribution` parameter is set to true, images will be renamed in the form "{blogname}_{timestamp}" and a .txt file with the like's textual content will be created using the same name (i.e. 'blogpost_123456_0.jpg' will have its note saved as 'blogpost_123456.txt').
+* The `postsToLoad` parameter will work for the latests post. For example: If you set a limit of 100, you'll get the latest 100 posts from you account. This can be useful if you already ran the utility before and your intention is just to update the folder with the latests posts.
 
 ## How to use
 
